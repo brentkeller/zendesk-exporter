@@ -6,9 +6,19 @@ import download from 'download';
 
 
 /*
-Usage: node index.js [start ticket ID] [end ticket ID]
+Set up:
+Some settings for your zendesk environment and agent account are needed to access the Zendesk API.
+Create a file in this directory called '.env'
+Add these lines:
 
-Will try to export each ticket between the start and end IDs.
+ZENDESK_SUBDOMAIN=<your zendesk subdomain>
+ZENDESK_EMAIL=<agent email address>/token
+ZENDESK_PASSWORD=<agent api token>
+
+Usage:
+node index.js [start ticket ID] [end ticket ID]
+
+The script will try to export each ticket between the start and end IDs.
 The ticket will be saved as a JSON file named for the ticket ID.
 Another JSON file will be saved with the ticket's comments.
 If the comments include any attachments or inline images, those will be saved in a folder with the ticket ID.
@@ -20,6 +30,16 @@ If the comments include any attachments or inline images, those will be saved in
 const myArgs = process.argv.slice(2);
 let startTicket = parseInt(myArgs[0]);
 let endTicket = parseInt(myArgs[1]);
+
+const settings = ['ZENDESK_SUBDOMAIN','ZENDESK_EMAIL','ZENDESK_PASSWORD']; 
+let settingMissing = false;
+
+settings.forEach(setting => {
+  if (process.env[setting] == null) {
+    console.log(`setting '${setting}' is missing, add it to the .env file`);
+    settingMissing = true;
+  }
+});
 
 const urlBase = `https://${process.env.ZENDESK_SUBDOMAIN}.zendesk.com/api/v2`;
 // if using a zendesk API token you need to append "/token" to the email (e.g. "user@example.com/token")
@@ -83,7 +103,7 @@ async function start() {
   console.log(`Finished: ${new Date().toTimeString()}`);
 }
 
-start();
+if (!settingMissing) start();
 
 async function writeJsonToFile(filepath, data) {
   await fse.writeJSON(filepath, data, { spaces: 2 });
