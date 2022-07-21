@@ -53,8 +53,16 @@ const delayMs = 300;
 async function getTicket(id) {
   console.log(`Exporting ticket #${id}`);
   let ticket = await downloadJson(`${urlBase}/tickets/${id}.json?include=users`, `${id}.json`);
+  if (ticket == null) {
+    console.log(`!!! Ticket ${id} not found`);
+    return;
+  }
   // console.log(ticket.ticket.id);
   let comments = await downloadJson(`${urlBase}/tickets/${id}/comments.json?include=users&include_inline_images=true`, `${id}-comments.json`);
+  if (comments == null) {
+    console.log(`!!! Ticket ${id} has no comments`);
+    return;
+  }
   // console.log(comments.comments.length);
   // Get attachments from comments
   const attachments = comments.comments?.flatMap(d => d.attachments.map(a => a.content_url).filter(a => a != null));
@@ -75,6 +83,7 @@ async function downloadJson(url, filename) {
     method: 'GET',
     headers: { 'Authorization': authHeader },
   });
+  if (response.status === 404) return null;
   const data = await response.json();
   await writeJsonToFile(path.join('tickets', filename), data);
   return data;
