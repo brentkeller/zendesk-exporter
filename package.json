@@ -1,0 +1,19 @@
+{
+  "name": "zendesk-exporter",
+  "version": "0.1.0",
+  "description": "Export tickets via the zendesk API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brent Keller",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "download": "^8.0.0",
+    "fs-extra": "^10.1.0",
+    "inquirer": "^8.2.4",
+    "node-fetch": "^3.2.6"
+  }
+}
